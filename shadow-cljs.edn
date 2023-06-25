@@ -7,5 +7,10 @@
  :dependencies
  []
 
+ :dev-http {3000 "public"}
+
  :builds
- {}}
+ {:main {:target :browser
+         :modules {:main {:entries [index]}}
+         :devtools {:repl-init-ns index
+                    :repl-pprint true}}}}

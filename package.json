@@ -2,6 +2,11 @@
   "name": "game",
   "version": "0.0.1",
   "private": true,
+  "scripts": {
+    "start": "shadow-cljs watch main",
+    "build": "shadow-cljs release main",
+    "check": "shadow-cljs check main && shadow-cljs release main --debug"
+  },
   "devDependencies": {
     "shadow-cljs": "2.24.0"
   }
