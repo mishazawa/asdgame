@@ -1,6 +1,6 @@
 (ns core.globals)
 
-(def state (atom {}))
+(def ^:private state (atom {}))
 
 (defn set-state
   [k v]

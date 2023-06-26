@@ -1,5 +1,6 @@
 (ns index
-  (:require [core.globals :refer [get-state]]
+  (:require [core.controls :refer [listen-controls]]
+            [core.globals :refer [get-state]]
             [core.renderer :refer [init stop-animation-loop]]
             [core.window :refer [clear-element]]
             [game.objects.cube :refer [Cube]]))
@@ -24,7 +25,8 @@
 
 (defn start []
   (let [gameloop (init-gameloop)]
-    (gameloop)))
+    (gameloop)
+    (listen-controls)))
 
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}

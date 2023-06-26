@@ -1,15 +1,15 @@
 (ns core.renderer
   (:require ["three" :refer [PerspectiveCamera Scene WebGLRenderer]]
             [core.globals :refer [get-state set-state]]
-            [core.window :refer [add-element cancel-raf raf sub]]
-            [utils.constants :refer [ASPECT FAR FOV get-screen-info NEAR]]))
+            [core.window :refer [add-element cancel-raf raf sub get-screen-info]]
+            [utils.constants :refer [FAR FOV NEAR]]))
 
-(def rafid (atom 0))
+(def ^:private rafid (atom 0))
 
 (defn stop-animation-loop []
   (cancel-raf @rafid))
 
-(defn update-viewport
+(defn ^:private update-viewport
   "Update renderer and camera with actual screen sizes."
   []
   (let [[w h a] (get-screen-info)
@@ -19,7 +19,7 @@
     (.setSize renderer w h)
     (.updateProjectionMatrix camera)))
 
-(defn create-render
+(defn ^:private create-render
   "Wrap RAF loop."
   []
   (let [camera (get-state :camera)
@@ -30,17 +30,16 @@
       (callback)
       (.render renderer scene camera))))
 
-
 (defn init
   "Create renderer and camera. Subscribe to resize window. Return render function for actual game logic."
   []
   (let [scene (new Scene)
-        camera (new PerspectiveCamera FOV ASPECT NEAR FAR)
+        camera (new PerspectiveCamera FOV 1 NEAR FAR)
         renderer (new WebGLRenderer)]
     ;; set globals
+    (set-state [:renderer] renderer)
     (set-state [:scene] scene)
     (set-state [:camera] camera)
-    (set-state [:renderer] renderer)
 
     ;; append to body
     (add-element renderer.domElement)

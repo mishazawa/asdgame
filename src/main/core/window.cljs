@@ -24,3 +24,8 @@
 (defn get-element
   ([id]
    (.getElementById js/window id)))
+
+(defn get-screen-info []
+  [js/window.innerWidth
+   js/window.innerHeight
+   (/ js/window.innerWidth js/window.innerHeight)])
