@@ -1,48 +1,35 @@
 (ns index
-  (:require ["three" :refer [PerspectiveCamera
-                             Scene
-                             WebGLRenderer
-                             BoxGeometry
-                             Mesh
-                             MeshBasicMaterial]]
-            [utils.constants :refer [ASPECT FAR FOV H NEAR W]]))
+  (:require [core.globals :refer [get-state]]
+            [core.renderer :refer [init stop-animation-loop]]
+            [core.window :refer [clear-element]]
+            [game.objects.cube :refer [Cube]]))
 
-(defn Cube [args]
-  (let [[x y z] (:size args)
-        geo (new BoxGeometry x y z)
-        mat (new MeshBasicMaterial #js{:color (:color args)})]
-    (new Mesh geo mat)))
 
-(def rafid (atom 0))
+(defn init-gameloop []
+  (let [render-fn (init)
+        scene (get-state :scene)
+        camera (get-state :camera)
+        cube (Cube {:size [1 1 1] :color 0xaaaaaa})]
 
-(defn init []
-  (let [scene (new Scene)
-        camera (new PerspectiveCamera FOV ASPECT NEAR FAR)
-        renderer (new WebGLRenderer)
-        cube (Cube {:size [1 1 1] :color 0xff0000})]
-
-    (.appendChild js/document.body renderer.domElement)
-    (.setSize renderer W H)
     (set! camera.position.z 10)
-    (.add scene cube)
 
-    #_{:clj-kondo/ignore [:inline-def]}
-    (defn render []
-      (set! cube.rotation.x (+ cube.rotation.x 0.1))
-      (set! cube.rotation.z (+ cube.rotation.z 0.1))
-      (.render renderer scene camera))
+    (-> scene
+        (.add cube))
 
-    #_{:clj-kondo/ignore [:inline-def]}
-    (defn anim []
-      (reset! rafid (.requestAnimationFrame js/window anim))
-      (render))
+    (fn []
+      (render-fn (fn []
+                   (set! cube.rotation.x (+ cube.rotation.x 0.1))
+                   (set! cube.rotation.z (+ cube.rotation.z 0.1)))))))
 
-    (anim)))
+
+(defn start []
+  (let [gameloop (init-gameloop)]
+    (gameloop)))
 
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn ^:dev/before-load cleanup []
-  (set! js/document.body.innerHTML "")
-  (.cancelAnimationFrame js/window @rafid))
+  (clear-element js/document.body)
+  (stop-animation-loop))
 
-(init)
+(start)
