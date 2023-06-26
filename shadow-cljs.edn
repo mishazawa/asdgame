@@ -4,8 +4,7 @@
   "src/main"
   "src/test"]
 
- :dependencies
- [[lilactown/helix "0.1.10"]]
+ :dependencies []
 
  :dev-http {3000 "public"}
 
