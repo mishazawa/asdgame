@@ -5,6 +5,8 @@
             [utils.constants :refer [FAR FOV NEAR]]))
 
 (def ^:private rafid (atom 0))
+(def ^:private update-stack (atom []))
+(def ^:private previous-ts (atom 0))
 
 (defn stop-animation-loop []
   (cancel-raf @rafid))
@@ -25,9 +27,12 @@
   (let [camera (get-state :camera)
         renderer (get-state :renderer)
         scene (get-state :scene)]
-    (fn animation [callback]
-      (reset! rafid (raf #(animation callback))) ;; mb somehow unwrap #(a cb)
-      (callback)
+    (fn animation [ts]
+      (reset! rafid (raf #(animation %)))
+      (let [elapsed (- ts @previous-ts)]
+        (doseq [f @update-stack]
+          (f elapsed))
+        (reset! previous-ts ts))
       (.render renderer scene camera))))
 
 (defn init
@@ -49,3 +54,16 @@
     (sub "resize" update-viewport)
     ;; return render function
     (create-render)))
+
+
+
+(defn animate
+  "Animate thing using RAF. Returns callback to stop(remove) animation."
+  [f]
+  (let [u (swap! update-stack conj f)
+        i (dec (count u))] ;; previous index
+    (fn []
+      (reset!
+       update-stack
+       (into (into [] (take i @update-stack))
+             (drop (inc i) @update-stack))))))

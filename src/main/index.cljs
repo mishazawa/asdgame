@@ -1,8 +1,10 @@
 (ns index
   (:require [core.controls :refer [listen-controls]]
             [core.globals :refer [get-state]]
-            [core.renderer :refer [init stop-animation-loop]]
+            [core.renderer :refer [animate init stop-animation-loop]]
             [core.window :refer [clear-element]]
+            [game.internals.lifecycle :refer [create destroy]]
+            [game.objects.animations :refer [rotating-object]]
             [game.objects.cube :refer [Cube]]))
 
 
@@ -10,23 +12,25 @@
   (let [render-fn (init)
         scene (get-state :scene)
         camera (get-state :camera)
-        cube (Cube {:size [1 1 1] :color 0xaaaaaa})]
+        cube (create Cube {:size [1 1 1] :color 0xaaaaaa})
+        stop-cube-anim (animate (rotating-object cube))]
 
     (set! camera.position.z 10)
 
     (-> scene
         (.add cube))
 
-    (fn []
-      (render-fn (fn []
-                   (set! cube.rotation.x (+ cube.rotation.x 0.1))
-                   (set! cube.rotation.z (+ cube.rotation.z 0.1)))))))
+    (js/setTimeout
+     (fn []
+       (stop-cube-anim)
+       (destroy cube)) 1000)
+
+    (render-fn 0)))
 
 
 (defn start []
-  (let [gameloop (init-gameloop)]
-    (gameloop)
-    (listen-controls)))
+  (init-gameloop)
+  (listen-controls))
 
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}

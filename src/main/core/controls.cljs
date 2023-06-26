@@ -1,5 +1,5 @@
 (ns core.controls
-  (:require [core.window :refer [raf sub]]))
+  (:require [core.window :refer [sub]]))
 
 (def ^:private enabled (atom true))
 (def ^:private keystatus (atom {}))
@@ -24,6 +24,11 @@
 
 (defn get-key [k]
   (get @keystatus k false))
+
+(defn on-keypress [f]
+  (comment
+    ;; todo watcher for keypress
+    ))
 
 (defn listen-controls []
   (sub "keydown" on-key)
