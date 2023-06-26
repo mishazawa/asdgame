@@ -25,10 +25,9 @@
 (defn get-key [k]
   (get @keystatus k false))
 
-(defn on-keypress [f]
-  (comment
-    ;; todo watcher for keypress
-    ))
+(defn on-keypress [k f]
+  (when (get-key k)
+    (f)))
 
 (defn listen-controls []
   (sub "keydown" on-key)

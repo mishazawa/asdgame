@@ -1,5 +1,5 @@
 (ns index
-  (:require [core.controls :refer [listen-controls]]
+  (:require [core.controls :refer [listen-controls on-keypress]]
             [core.globals :refer [get-state]]
             [core.renderer :refer [animate init stop-animation-loop]]
             [core.window :refer [clear-element]]
@@ -13,9 +13,12 @@
         scene (get-state :scene)
         camera (get-state :camera)
         cube (create Cube {:size [1 1 1] :color 0xaaaaaa})
-        stop-cube-anim (animate (rotating-object cube))]
+        rotating-anim (rotating-object cube)
+        stop-cube-anim (animate rotating-anim)]
 
     (set! camera.position.z 10)
+
+    (animate (fn [dt] (on-keypress :KeyA #(rotating-anim dt))))
 
     (-> scene
         (.add cube))
@@ -23,7 +26,7 @@
     (js/setTimeout
      (fn []
        (stop-cube-anim)
-       (destroy cube)) 1000)
+       (comment destroy cube)) 1000)
 
     (render-fn 0)))
 
